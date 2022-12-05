@@ -10,7 +10,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.post('/user/signin', user.signin)
 app.get('/user/login', user.login);
-app.get('/data',)
+app.get('/data', (req, res) => {
+    res.send({ header: req.header })
+})
 
 app.listen(1234, () => {
     console.log('server is running on 1234');

@@ -14,7 +14,7 @@ exports.signin = async (req, res, next) => {
         password: password
     })
 
-    await userData.save().then((result) => { res.send({ result, token }) }).catch((err) => { console.log(err) });
+    await userData.save().then((result) => { res.send({ result }) }).catch((err) => { console.log(err) });
 }
 
 exports.login = async (req, res, next) => {
@@ -32,7 +32,6 @@ exports.login = async (req, res, next) => {
             const token = jwt.sign({ id: user._id }, 'secret');
             res.cookie('jwt', token, { httponly: true, maxage: 10000 })
             console.log('token', token);
-            next('user authenticated');
             res.send({
                 data: {
                     name: user.name,
