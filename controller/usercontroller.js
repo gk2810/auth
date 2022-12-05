@@ -5,37 +5,38 @@ const jwt = require('jsonwebtoken');
 exports.signin = async (req, res, next) => {
 
     const { name, email, password } = req.body;
-
+    if (!name || !email || !password) {
+        res.send('Please enter details');
+    }
     const userData = new Schema({
         name: name,
         email: email,
         password: password
     })
 
-    await userData.save().then((result) => {
-
-        let token = jwt.sign({ id: result._id }, 'secret')
-        res.cookie('jwt', token, { httponly: true, maxage: 10000 })
-        res.send({ result, token })
-    }).catch((err) => { console.log(err) });
+    await userData.save().then((result) => { res.send({ result, token }) }).catch((err) => { console.log(err) });
 }
 
 exports.login = async (req, res, next) => {
     const { email, password } = req.body;
 
+    if (!password) {
+        res.send('Please enter password!');
+    }
     const user = await Schema.findOne({ email: email })
 
     if (user) {
         let user_exist = bcrypt.compare(password, user.password);
         if (user_exist) {
 
-            // const token = jwt.sign({id:user._id},'secret');
-            // console.log('token',token);
+            const token = jwt.sign({ id: user._id }, 'secret');
+            res.cookie('jwt', token, { httponly: true, maxage: 10000 })
+            console.log('token', token);
             next('user authenticated');
             res.send({
                 data: {
                     name: user.name,
-                    // token
+                    token
                 }
             })
         }
